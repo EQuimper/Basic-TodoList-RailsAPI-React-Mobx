@@ -20,9 +20,11 @@ class TodoStore {
 		const matchesFilter = new RegExp(this.filter, "i");
 		return this.todos.filter(todo => !this.filter || matchesFilter.test(todo.attributes.name));
 	}
+	
 	createTodo(value, id) {
 		this.todos = [...this.todos, new Todo(value, id)];
 	}
+
 	toggleCompleted(item) {
 		this.todos.filter(todo => {
 			if (todo.id !== item.id) {
@@ -31,10 +33,12 @@ class TodoStore {
 			return item.attributes.completed = !item.attributes.completed;
 		});
 	}
+
 	clearCompleted = () => {
 		const incompleted = this.todos.filter(todo => !todo.attributes.completed);
 		this.todos.replace(incompleted);
 	};
+
 	deleteTodo(id) {
 		const itemIndex = this.todos.findIndex(todo => todo.id === id);
 		this.todos = [
@@ -42,8 +46,9 @@ class TodoStore {
 			...this.todos.slice(itemIndex + 1)
 		]
 	}
+
 }
 
-const store = window.store = new TodoStore;
+const store = new TodoStore;
 
 export default store;
