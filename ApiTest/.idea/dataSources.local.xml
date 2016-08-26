@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="Rails ApiTest: test" uuid="da478c11-f2d2-44f7-8284-f3d2c95d59c1">
+      <introspection-scope>ApiTest_test:public,pg_catalog,</introspection-scope>
+      <resolve-scope>ApiTest_test:public,</resolve-scope>
+    </data-source>
+    <data-source name="Rails ApiTest: development" uuid="2c099960-c19c-4c4b-9bb9-b9bd6a05ef32">
+      <introspection-scope>ApiTest_development:pg_catalog,public</introspection-scope>
+      <resolve-scope>ApiTest_development:public</resolve-scope>
+    </data-source>
+    <data-source name="Rails ApiTest: production" uuid="7ebccb14-d155-4961-95c5-5ee3277249f9">
+      <first-sync>true</first-sync>
+      <user-name>ApiTest</user-name>
+      <user-password>df96df8fdf97df8adfefdfe4dffcdff1df8ddfebdffadfe3dffedfefdff9dffedff5dfeedfebdffedfebdfe8dfebdff9dfefdff5dffadfebdff9dff9dffddfe5dff8dfeedf8ddff7df8adf8fdf94</user-password>
+    </data-source>
+  </component>
+</project>
