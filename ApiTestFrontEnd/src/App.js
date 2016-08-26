@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
+import DevTools from 'mobx-react-devtools';
 import { observer } from 'mobx-react';
 
 @observer
@@ -85,6 +86,7 @@ class App extends Component {
 		));
 		return (
 			<div className="App">
+				<DevTools />
 				<h1>My Todos</h1>
 				<input type="text" onKeyPress={e => this.handleCreate(e)} placeholder="Add a new todo"/>
 				<input type="text" value={filter} onChange={e => this.filter(e)}/>
