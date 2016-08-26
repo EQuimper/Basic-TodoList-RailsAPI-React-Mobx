@@ -1,65 +1,97 @@
 import 'whatwg-fetch';
 import React, { Component } from 'react';
-import './App.css';
-import Todo from './Todo';
+import { observer } from 'mobx-react';
 
+@observer
 class App extends Component {
-	constructor() {
-		super();
-		this.state = {}
-	}
-
 	componentDidMount() {
 		fetch('http://localhost:3000/todos')
-			.then(res => {
-				return res.json();
-			})
+			.then(res => res.json())
 			.then(resJson => {
-				const todos = resJson.data.map(todo => todo);
-				return this.setState({
-					todos
-				});
+				return this.props.store.todos = resJson.data.map(todo => todo);
 			})
 			.catch(err => console.log(err));
 	}
 
-	handleSubmit(e) {
+	filter(e) {
 		e.preventDefault();
-		const name = this.refs.inputTodo.value;
-		const lastItem = this.state.todos[this.state.todos.length - 1];
-		const id = parseInt(lastItem.id) + 1;
-		this.setState({
-			todos: [...this.state.todos, {
-				id,
-				attributes: {
-					name,
-					completed: false
-				}
-			}]
-		});
-		fetch(`http://localhost:3000/todos`, {
+		this.props.store.filter = e.target.value;
+	}
+
+	handleCreate(e) {
+		if (e.which === 13) { // See if they press 'ENTER'
+			fetch(`http://localhost:3000/todos`, {
+				dataType: 'json',
+				headers: { 'content-type': 'application/json' },
+				method: 'POST',
+				body: JSON.stringify({ name: e.target.value })
+			})
+				.then(res => res.json()) // Get res from the server and make it json
+				.then(resJson => {
+					this.props.store.createTodo(
+						resJson.data.attributes.name,
+						resJson.data.id
+					);
+				})
+				.catch(err => console.log(err));
+			e.target.value = ''; // Clear out the input after submit
+		}
+	}
+
+	toggleCompleted(item) {
+		this.props.store.toggleCompleted(item);
+		fetch(`http://localhost:3000/todos/${item.id}`, {
 			dataType: 'json',
 			headers: { 'content-type': 'application/json' },
-			method: 'POST',
-			body: JSON.stringify({ name })
+			method: 'PATCH',
+			body: JSON.stringify({
+				completed: this.props.store.todos.find(
+					todo => todo.id === item.id
+				).attributes.completed
+			})
 		});
-		this.refs.inputTodo.value = '';
+	}
+
+	handleDeleteTodo(id) {
+		if (confirm('Are you sure you want to delete this todo ?')) {
+			this.props.store.deleteTodo(id);
+			fetch(`http://localhost:3000/todos/${id}`, {
+				dataType: 'json',
+				headers: { 'content-type': 'application/json' },
+				method: 'DELETE'
+			});
+		}
 	}
 
 	render() {
-		if (!this.state.todos) return <h1>Loading...</h1>;
-		const { todos } = this.state;
+		if (!this.props.store.todos) return <h1>Loading...</h1>;
+		const { filter, filteredTodos, clearCompleted } = this.props.store;
+		const todolist = filteredTodos.map(todo => (
+			<li
+				key={todo.id}
+				style={{
+					textDecoration: todo.attributes.completed ? 'line-through' : 'none'
+				}}
+			>
+				{todo.attributes.name}
+				<input
+					type="checkbox"
+					value={todo.attributes.completed}
+					checked={todo.attributes.completed}
+				  onChange={() => this.toggleCompleted(todo)}
+				/>
+				<button onClick={() => this.handleDeleteTodo(todo.id)}>&#10008;</button>
+			</li>
+		));
 		return (
 			<div className="App">
-				<form onSubmit={(e) => this.handleSubmit(e)}>
-					<input type="text" placeholder="Add a new todo" ref="inputTodo"/>
-					<input type="submit" value="Submit"/>
-				</form>
-				{todos.map((todo, i) => (
-					<li key={i} style={{ listStyle: 'none' }}>
-						<Todo todo={todo} />
-					</li>
-				))}
+				<h1>My Todos</h1>
+				<input type="text" onKeyPress={e => this.handleCreate(e)} placeholder="Add a new todo"/>
+				<input type="text" value={filter} onChange={e => this.filter(e)}/>
+				<ul>
+					{todolist.length > 0 ? todolist : 'No todo'}
+				</ul>
+				<button onClick={clearCompleted}>Clear Completed</button>
 			</div>
 		);
 	}
